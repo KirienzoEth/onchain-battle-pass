@@ -1,0 +1,21 @@
+{
+  "name": "onchain-battlepass",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.42.1",
+    "@typescript-eslint/parser": "^5.42.1",
+    "eslint": "^8.27.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "hardhat": "^2.12.1"
+  },
+  "scripts": {
+    "lint": "eslint . --ext .ts",
+    "prettier-format": "prettier --config .prettierrc test scripts --write",
+    "test": "hardhat test",
+    "compile": "hardhat compile"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.0"
+  }
+}
