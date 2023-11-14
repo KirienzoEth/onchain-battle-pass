@@ -31,9 +31,9 @@ contract PremiumAccessManager is Ownable {
   /// @notice Buy premium access
   /// @dev Cannot be used if premium price is 0, msg.sender already has premium or value sent is different from premium price
   function buyPremium() public payable {
-    require(premiumPrice != 0, "BattlePass: premium price cannot be 0");
-    require(!hasPremium[_msgSender()], "BattlePass: caller already has premium");
-    require(msg.value == premiumPrice, "BattlePass: wrong value sent");
+    require(premiumPrice != 0, "PremiumAccessManager: premium price cannot be 0");
+    require(!hasPremium[_msgSender()], "PremiumAccessManager: caller already has premium");
+    require(msg.value == premiumPrice, "PremiumAccessManager: wrong value sent");
 
     hasPremium[_msgSender()] = true;
 
