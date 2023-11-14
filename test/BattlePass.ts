@@ -62,7 +62,7 @@ describe('BattlePass', function () {
       const { battlePass, otherAccounts } = await loadFixture(deployFixture);
 
       await expect(
-        battlePass.connect(otherAccounts[0]).setManagerStatus(otherAccounts[0].address, true)
+        battlePass.connect(otherAccounts[0]).setManagerStatus(otherAccounts[0].address, true),
       ).to.be.revertedWith('Ownable: caller is not the owner');
     });
     it('Should add the address to the list of managers', async function () {
@@ -93,7 +93,7 @@ describe('BattlePass', function () {
       const { battlePass, otherAccounts } = await loadFixture(deployFixture);
 
       await expect(battlePass.connect(otherAccounts[0]).grantPoints('1', otherAccounts[0].address)).to.be.revertedWith(
-        'BattlePass: caller is not a manager'
+        'BattlePass: caller is not a manager',
       );
     });
     it('Should add N points to the balance of an address', async function () {
@@ -116,7 +116,7 @@ describe('BattlePass', function () {
       const { battlePass, otherAccounts } = await loadFixture(deployFixture);
 
       await expect(battlePass.connect(otherAccounts[0]).createStep('100', '50', false)).to.be.revertedWith(
-        'Ownable: caller is not the owner'
+        'Ownable: caller is not the owner',
       );
     });
     it('Should create a step', async function () {
@@ -145,7 +145,7 @@ describe('BattlePass', function () {
       const { battlePass, erc20, erc20ItemType, otherAccounts } = await loadFixture(deployFixture);
 
       await expect(
-        battlePass.connect(otherAccounts[0]).addItemToStep(0, erc20ItemType, erc20.address, '100', 5)
+        battlePass.connect(otherAccounts[0]).addItemToStep(0, erc20ItemType, erc20.address, '100', 5),
       ).to.be.revertedWith('Ownable: caller is not the owner');
     });
     it('Should add an ERC20 item to the step', async function () {
@@ -218,7 +218,7 @@ describe('BattlePass', function () {
       const { battlePass, otherAccounts } = await loadFixture(deployFixture);
 
       await expect(battlePass.connect(otherAccounts[0]).activateStep(0)).to.be.revertedWith(
-        'Ownable: caller is not the owner'
+        'Ownable: caller is not the owner',
       );
     });
     it('Should fail if the step does not exist', async function () {
@@ -247,7 +247,7 @@ describe('BattlePass', function () {
 
       const erc1155Balances = await erc1155.balanceOfBatch(
         [battlePass.address, battlePass.address, battlePass.address],
-        [0, 1, 2]
+        [0, 1, 2],
       );
 
       expect(erc1155Balances[0]).to.equal('50');
@@ -283,7 +283,9 @@ describe('BattlePass', function () {
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 0, 5);
       await battlePass.activateStep(0);
 
-      await expect(battlePass.claimStep(owner.address, 0)).to.be.revertedWith('BattlePass: caller does not have enough points');
+      await expect(battlePass.claimStep(owner.address, 0)).to.be.revertedWith(
+        'BattlePass: caller does not have enough points',
+      );
     });
     it('Should fail if the caller already claimed', async function () {
       const { battlePass, erc1155ItemType, erc1155, owner } = await loadFixture(deployFixture);
@@ -295,12 +297,13 @@ describe('BattlePass', function () {
       await battlePass.grantPoints('50', owner.address);
       await battlePass.claimStep(owner.address, 0);
 
-      await expect(battlePass.claimStep(owner.address, 0)).to.be.revertedWith('BattlePass: caller already claimed this step');
+      await expect(battlePass.claimStep(owner.address, 0)).to.be.revertedWith(
+        'BattlePass: caller already claimed this step',
+      );
     });
     it('Should claim all the items in the step', async function () {
-      const { battlePass, erc1155, erc20, erc1155ItemType, erc20ItemType, otherAccounts } = await loadFixture(
-        deployFixture
-      );
+      const { battlePass, erc1155, erc20, erc1155ItemType, erc20ItemType, otherAccounts } =
+        await loadFixture(deployFixture);
 
       await battlePass.createStep('50', '10', false);
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 0, 5);
@@ -319,7 +322,7 @@ describe('BattlePass', function () {
 
       const erc1155Balances = await erc1155.balanceOfBatch(
         [otherAccounts[0].address, otherAccounts[0].address, otherAccounts[0].address],
-        [0, 1, 2]
+        [0, 1, 2],
       );
 
       expect(erc1155Balances[0]).to.equal('5');
@@ -338,16 +341,15 @@ describe('BattlePass', function () {
 
       await battlePass.grantPoints('50', otherAccounts[0].address);
       await expect(battlePass.connect(otherAccounts[0]).claimStep(otherAccounts[0].address, 0)).to.be.revertedWith(
-        'BattlePass: this step require a premium access'
+        'BattlePass: this step require a premium access',
       );
 
       const isClaimed = await battlePass.didAddressClaimStep(otherAccounts[0].address, 0);
       expect(isClaimed).to.be.false;
     });
     it('Should claim all the items in the premium step', async function () {
-      const { battlePass, erc1155, erc20, erc1155ItemType, erc20ItemType, otherAccounts } = await loadFixture(
-        deployFixture
-      );
+      const { battlePass, erc1155, erc20, erc1155ItemType, erc20ItemType, otherAccounts } =
+        await loadFixture(deployFixture);
 
       await battlePass.createStep('50', '10', true);
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 0, 5);
@@ -367,7 +369,7 @@ describe('BattlePass', function () {
 
       const erc1155Balances = await erc1155.balanceOfBatch(
         [otherAccounts[0].address, otherAccounts[0].address, otherAccounts[0].address],
-        [0, 1, 2]
+        [0, 1, 2],
       );
 
       expect(erc1155Balances[0]).to.equal('5');

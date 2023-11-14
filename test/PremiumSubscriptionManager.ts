@@ -20,7 +20,7 @@ describe('PremiumAccessManager', function () {
       const { battlePass, otherAccounts } = await loadFixture(deployFixture);
 
       await expect(battlePass.connect(otherAccounts[0]).grantPremium(otherAccounts[0].address)).to.be.revertedWith(
-        'Ownable: caller is not the owner'
+        'Ownable: caller is not the owner',
       );
     });
     it('Should set the premium status of the address to true', async function () {
@@ -40,7 +40,7 @@ describe('PremiumAccessManager', function () {
       const { battlePass, otherAccounts } = await loadFixture(deployFixture);
 
       await expect(battlePass.connect(otherAccounts[0]).setPremiumPrice('1000000000000000000')).to.be.revertedWith(
-        'Ownable: caller is not the owner'
+        'Ownable: caller is not the owner',
       );
     });
     it('Should set the premium price', async function () {
@@ -71,7 +71,7 @@ describe('PremiumAccessManager', function () {
       const { battlePass, otherAccounts } = await loadFixture(deployFixture);
 
       await expect(battlePass.connect(otherAccounts[0]).buyPremium()).to.be.revertedWith(
-        'PremiumAccessManager: premium price cannot be 0'
+        'PremiumAccessManager: premium price cannot be 0',
       );
     });
     it('Should fail if the address already has premium', async function () {
@@ -80,7 +80,7 @@ describe('PremiumAccessManager', function () {
       await battlePass.setPremiumPrice('10000000000');
       await battlePass.connect(otherAccounts[0]).buyPremium({ value: '10000000000' });
       await expect(battlePass.connect(otherAccounts[0]).buyPremium({ value: '10000000000' })).to.be.revertedWith(
-        'PremiumAccessManager: caller already has premium'
+        'PremiumAccessManager: caller already has premium',
       );
     });
     it('Should fail if the value sent is too low', async function () {
@@ -88,7 +88,7 @@ describe('PremiumAccessManager', function () {
 
       await battlePass.setPremiumPrice('10000000000');
       await expect(battlePass.connect(otherAccounts[0]).buyPremium({ value: '1' })).to.be.revertedWith(
-        'PremiumAccessManager: wrong value sent'
+        'PremiumAccessManager: wrong value sent',
       );
     });
     it('Should fail if the value sent is too high', async function () {
@@ -96,7 +96,7 @@ describe('PremiumAccessManager', function () {
 
       await battlePass.setPremiumPrice('10000000000');
       await expect(battlePass.connect(otherAccounts[0]).buyPremium({ value: '100000000000' })).to.be.revertedWith(
-        'PremiumAccessManager: wrong value sent'
+        'PremiumAccessManager: wrong value sent',
       );
     });
   });
