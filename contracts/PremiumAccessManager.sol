@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.23;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 /// @author KirienzoEth
 contract PremiumAccessManager is Ownable {
   event SetPremiumPrice(uint256 _price);
-  event GetPremium(address _address);
+  event GrantPremiumAccess(address _address);
 
   /// Returns the price of the premium access
   uint256 public premiumPrice;
@@ -25,7 +25,7 @@ contract PremiumAccessManager is Ownable {
   function grantPremium(address _address) public onlyOwner {
     hasPremium[_address] = true;
 
-    emit GetPremium(_address);
+    emit GrantPremiumAccess(_address);
   }
 
   /// @notice Buy premium access
@@ -37,6 +37,6 @@ contract PremiumAccessManager is Ownable {
 
     hasPremium[_msgSender()] = true;
 
-    emit GetPremium(_msgSender());
+    emit GrantPremiumAccess(_msgSender());
   }
 }

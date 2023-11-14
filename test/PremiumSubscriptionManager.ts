@@ -27,7 +27,7 @@ describe('PremiumAccessManager', function () {
       const { battlePass, otherAccounts } = await loadFixture(deployFixture);
 
       await expect(battlePass.grantPremium(otherAccounts[0].address))
-        .to.emit(battlePass, 'GetPremium')
+        .to.emit(battlePass, 'GrantPremiumAccess')
         .withArgs(otherAccounts[0].address);
 
       const hasPremium = await battlePass.hasPremium(otherAccounts[0].address);
@@ -61,7 +61,7 @@ describe('PremiumAccessManager', function () {
 
       await battlePass.setPremiumPrice('10000000000');
       await expect(battlePass.connect(otherAccounts[0]).buyPremium({ value: '10000000000' }))
-        .to.emit(battlePass, 'GetPremium')
+        .to.emit(battlePass, 'GrantPremiumAccess')
         .withArgs(otherAccounts[0].address);
 
       const hasPremium = await battlePass.hasPremium(otherAccounts[0].address);
