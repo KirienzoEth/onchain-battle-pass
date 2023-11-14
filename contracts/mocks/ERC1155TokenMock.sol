@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.23;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
@@ -16,37 +16,19 @@ contract ERC1155TokenMock is ERC1155 {
     _setURI(newuri);
   }
 
-  function mint(
-    address to,
-    uint256 id,
-    uint256 value,
-    bytes memory data
-  ) public {
+  function mint(address to, uint256 id, uint256 value, bytes memory data) public {
     _mint(to, id, value, data);
   }
 
-  function mintBatch(
-    address to,
-    uint256[] memory ids,
-    uint256[] memory values,
-    bytes memory data
-  ) public {
+  function mintBatch(address to, uint256[] memory ids, uint256[] memory values, bytes memory data) public {
     _mintBatch(to, ids, values, data);
   }
 
-  function burn(
-    address owner,
-    uint256 id,
-    uint256 value
-  ) public {
+  function burn(address owner, uint256 id, uint256 value) public {
     _burn(owner, id, value);
   }
 
-  function burnBatch(
-    address owner,
-    uint256[] memory ids,
-    uint256[] memory values
-  ) public {
+  function burnBatch(address owner, uint256[] memory ids, uint256[] memory values) public {
     _burnBatch(owner, ids, values);
   }
 

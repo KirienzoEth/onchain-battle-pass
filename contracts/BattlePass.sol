@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.23;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
@@ -84,11 +84,7 @@ contract BattlePass is PremiumAccessManager, ERC1155Holder {
     emit SetManagerStatus(_address, _status);
   }
 
-  function createStep(
-    uint256 _pointsRequired,
-    uint256 _claimsAmount,
-    bool _isPremiumRequired
-  ) public onlyOwner {
+  function createStep(uint256 _pointsRequired, uint256 _claimsAmount, bool _isPremiumRequired) public onlyOwner {
     _steps[stepsAmount] = Step(_pointsRequired, 0, _claimsAmount, _isPremiumRequired, false);
 
     emit CreateStep(stepsAmount++, _pointsRequired, _claimsAmount, _isPremiumRequired);
