@@ -11,6 +11,29 @@ import "./PremiumAccessManager.sol";
 /// @title Battle pass system used in video games for on chain rewards.
 /// @author KirienzoEth
 contract BattlePass is PremiumAccessManager, ERC1155Holder {
+  enum ItemType {
+    ERC20,
+    ERC1155
+  }
+
+  /// One step of the battle pass that grant prizes
+  struct Step {
+    uint64 pointsRequired;
+    uint32 itemsAmount;
+    uint32 claimsAmount;
+    bool isPremiumRequired;
+    bool isClaimable;
+  }
+
+  /// Item to be distributed in steps
+  struct Item {
+    ItemType itemType;
+    address contractAddress;
+    /// Only used for ERC1155
+    uint256 tokenId;
+    uint256 amount;
+  }
+
   event GrantPoints(uint256 _amount, address _to);
   event SetManagerStatus(address _address, bool _status);
   event CreateStep(uint256 _index, uint256 _pointsRequired, uint256 _claimsAmount, bool _isPremiumRequired);
@@ -25,11 +48,6 @@ contract BattlePass is PremiumAccessManager, ERC1155Holder {
     uint256 _amount
   );
 
-  enum ItemType {
-    ERC20,
-    ERC1155
-  }
-
   /// Returns the number of points an address accumulated
   mapping(address => uint256) public balanceOf;
   /// Returns true if an address is allowed to grant points
@@ -43,24 +61,6 @@ contract BattlePass is PremiumAccessManager, ERC1155Holder {
   mapping(uint256 => Step) private _steps;
   /// All of the items added in a step
   mapping(uint256 => mapping(uint256 => Item)) private _itemsOfStep;
-
-  /// One step of the battle pass that grant prizes
-  struct Step {
-    uint256 pointsRequired;
-    uint256 itemsAmount;
-    uint256 claimsAmount;
-    bool isPremiumRequired;
-    bool isClaimable;
-  }
-
-  /// Item to be distributed in steps
-  struct Item {
-    ItemType itemType;
-    address contractAddress;
-    /// Only used for ERC1155
-    uint256 tokenId;
-    uint256 amount;
-  }
 
   constructor() {
     isManager[_msgSender()] = true;
@@ -84,7 +84,7 @@ contract BattlePass is PremiumAccessManager, ERC1155Holder {
     emit SetManagerStatus(_address, _status);
   }
 
-  function createStep(uint256 _pointsRequired, uint256 _claimsAmount, bool _isPremiumRequired) public onlyOwner {
+  function createStep(uint64 _pointsRequired, uint32 _claimsAmount, bool _isPremiumRequired) public onlyOwner {
     _steps[stepsAmount] = Step(_pointsRequired, 0, _claimsAmount, _isPremiumRequired, false);
 
     emit CreateStep(stepsAmount++, _pointsRequired, _claimsAmount, _isPremiumRequired);

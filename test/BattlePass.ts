@@ -122,8 +122,8 @@ describe('BattlePass', function () {
     it('Should create a step', async function () {
       const { battlePass } = await loadFixture(deployFixture);
 
-      const pointsRequired = '100';
-      const claimsAmount = '50';
+      const pointsRequired = 100;
+      const claimsAmount = 50;
       const isPremiumRequired = false;
       await expect(battlePass.createStep(pointsRequired, claimsAmount, isPremiumRequired))
         .to.emit(battlePass, 'CreateStep')
@@ -136,7 +136,7 @@ describe('BattlePass', function () {
       expect(step.pointsRequired).to.equal(pointsRequired);
       expect(step.isPremiumRequired).to.equal(isPremiumRequired);
       expect(step.claimsAmount).to.equal(claimsAmount);
-      expect(step.itemsAmount).to.equal('0');
+      expect(step.itemsAmount).to.equal(0);
     });
   });
 
@@ -186,16 +186,16 @@ describe('BattlePass', function () {
     it('Should return the step at the provided index', async function () {
       const { battlePass } = await loadFixture(deployFixture);
 
-      const pointsRequired = '100';
+      const pointsRequired = 100;
       const isPremiumRequired = false;
-      const claimsAmount = '50';
+      const claimsAmount = 50;
       await battlePass.createStep(pointsRequired, claimsAmount, isPremiumRequired);
 
       const step = await battlePass.getStep(0);
       expect(step.pointsRequired).to.equal(pointsRequired);
       expect(step.isPremiumRequired).to.equal(isPremiumRequired);
       expect(step.claimsAmount).to.equal(claimsAmount);
-      expect(step.itemsAmount).to.equal('0');
+      expect(step.itemsAmount).to.equal(0);
     });
   });
 
