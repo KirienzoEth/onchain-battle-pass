@@ -13,6 +13,7 @@
     "lint": "eslint . --ext .ts",
     "prettier-format": "prettier --config .prettierrc test scripts --write",
     "test": "hardhat test",
+    "coverage": "hardhat coverage",
     "compile": "hardhat compile"
   },
   "dependencies": {
