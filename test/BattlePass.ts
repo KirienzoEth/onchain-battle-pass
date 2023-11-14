@@ -213,27 +213,27 @@ describe('BattlePass', function () {
     });
   });
 
-  describe('activateStep', function () {
+  describe('enableStep', function () {
     it('Should only be usable by the owner', async function () {
       const { battlePass, otherAccounts } = await loadFixture(deployFixture);
 
-      await expect(battlePass.connect(otherAccounts[0]).activateStep(0)).to.be.revertedWith(
+      await expect(battlePass.connect(otherAccounts[0]).enableStep(0)).to.be.revertedWith(
         'Ownable: caller is not the owner',
       );
     });
     it('Should fail if the step does not exist', async function () {
       const { battlePass } = await loadFixture(deployFixture);
 
-      await expect(battlePass.activateStep(0)).to.be.revertedWith('BattlePass: step does not exist');
+      await expect(battlePass.enableStep(0)).to.be.revertedWith('BattlePass: step does not exist');
     });
     it('Should fail if the step was already activated', async function () {
       const { battlePass, erc1155, erc1155ItemType } = await loadFixture(deployFixture);
 
       await battlePass.createStep('50', '10', false);
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 0, 5);
-      await battlePass.activateStep(0);
+      await battlePass.enableStep(0);
 
-      await expect(battlePass.activateStep(0)).to.be.revertedWith('BattlePass: step was already activated');
+      await expect(battlePass.enableStep(0)).to.be.revertedWith('BattlePass: step was already enabled');
     });
     it('Should activate the step if the caller has all of the assets', async function () {
       const { battlePass, erc1155, erc20, erc1155ItemType, erc20ItemType } = await loadFixture(deployFixture);
@@ -243,7 +243,7 @@ describe('BattlePass', function () {
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 1, 2);
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 2, 1);
       await battlePass.addItemToStep(0, erc20ItemType, erc20.address, '0', ethers.utils.parseEther('1'));
-      await expect(battlePass.activateStep(0)).to.emit(battlePass, 'ActivateStep').withArgs('0');
+      await expect(battlePass.enableStep(0)).to.emit(battlePass, 'EnableStep').withArgs('0');
 
       const erc1155Balances = await erc1155.balanceOfBatch(
         [battlePass.address, battlePass.address, battlePass.address],
@@ -281,7 +281,7 @@ describe('BattlePass', function () {
 
       await battlePass.createStep('50', '10', false);
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 0, 5);
-      await battlePass.activateStep(0);
+      await battlePass.enableStep(0);
 
       await expect(battlePass.claimStep(owner.address, 0)).to.be.revertedWith(
         'BattlePass: caller does not have enough points',
@@ -292,7 +292,7 @@ describe('BattlePass', function () {
 
       await battlePass.createStep('50', '10', false);
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 0, 5);
-      await battlePass.activateStep(0);
+      await battlePass.enableStep(0);
 
       await battlePass.grantPoints('50', owner.address);
       await battlePass.claimStep(owner.address, 0);
@@ -310,7 +310,7 @@ describe('BattlePass', function () {
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 1, 2);
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 2, 1);
       await battlePass.addItemToStep(0, erc20ItemType, erc20.address, '0', ethers.utils.parseEther('1'));
-      await battlePass.activateStep(0);
+      await battlePass.enableStep(0);
 
       await battlePass.grantPoints('50', otherAccounts[0].address);
       await expect(battlePass.connect(otherAccounts[0]).claimStep(otherAccounts[0].address, 0))
@@ -337,7 +337,7 @@ describe('BattlePass', function () {
 
       await battlePass.createStep('50', '10', true);
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 0, 5);
-      await battlePass.activateStep(0);
+      await battlePass.enableStep(0);
 
       await battlePass.grantPoints('50', otherAccounts[0].address);
       await expect(battlePass.connect(otherAccounts[0]).claimStep(otherAccounts[0].address, 0)).to.be.revertedWith(
@@ -356,7 +356,7 @@ describe('BattlePass', function () {
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 1, 2);
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 2, 1);
       await battlePass.addItemToStep(0, erc20ItemType, erc20.address, '0', ethers.utils.parseEther('1'));
-      await battlePass.activateStep(0);
+      await battlePass.enableStep(0);
 
       await battlePass.grantPremium(otherAccounts[0].address);
       await battlePass.grantPoints('50', otherAccounts[0].address);

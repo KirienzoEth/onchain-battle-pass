@@ -15,7 +15,7 @@ This is the `BattlePass` contract. It allows you to load ERC20/ERC1155 items int
   * The address of the contract of the item
   * The token ID of the item (only used for ERC1155 tokens)
   * The amount of that item to be given when an address claims the step
-* Activate the step with `activateStep` with:
+* Activate the step with `enableStep` with:
   * The index of the step to activate
   * NOTE: This action cannot be undone and signal that the step is ready to be claimed, so make sure your step is well configured
   * NOTE 2: This method will take all of the items required by the step from your wallet, so make sure you approved the battle pass address in each of the item's contract
