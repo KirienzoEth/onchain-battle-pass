@@ -264,26 +264,26 @@ describe('BattlePass', function () {
 
   describe('claimStep', function () {
     it('Should fail if the step does not exist', async function () {
-      const { battlePass } = await loadFixture(deployFixture);
+      const { battlePass, owner } = await loadFixture(deployFixture);
 
-      await expect(battlePass.claimStep(0)).to.be.revertedWith('BattlePass: step does not exist');
+      await expect(battlePass.claimStep(owner.address, 0)).to.be.revertedWith('BattlePass: step does not exist');
     });
     it('Should fail if the step is not claimable', async function () {
-      const { battlePass, erc1155ItemType, erc1155 } = await loadFixture(deployFixture);
+      const { battlePass, owner, erc1155ItemType, erc1155 } = await loadFixture(deployFixture);
 
       await battlePass.createStep('50', '10', false);
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 0, 5);
 
-      await expect(battlePass.claimStep(0)).to.be.revertedWith('BattlePass: step is not claimable');
+      await expect(battlePass.claimStep(owner.address, 0)).to.be.revertedWith('BattlePass: step is not claimable');
     });
     it('Should fail if the caller does not have enough points', async function () {
-      const { battlePass, erc1155ItemType, erc1155 } = await loadFixture(deployFixture);
+      const { battlePass, owner, erc1155ItemType, erc1155 } = await loadFixture(deployFixture);
 
       await battlePass.createStep('50', '10', false);
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 0, 5);
       await battlePass.activateStep(0);
 
-      await expect(battlePass.claimStep(0)).to.be.revertedWith('BattlePass: caller does not have enough points');
+      await expect(battlePass.claimStep(owner.address, 0)).to.be.revertedWith('BattlePass: caller does not have enough points');
     });
     it('Should fail if the caller already claimed', async function () {
       const { battlePass, erc1155ItemType, erc1155, owner } = await loadFixture(deployFixture);
@@ -293,9 +293,9 @@ describe('BattlePass', function () {
       await battlePass.activateStep(0);
 
       await battlePass.grantPoints('50', owner.address);
-      await battlePass.claimStep(0);
+      await battlePass.claimStep(owner.address, 0);
 
-      await expect(battlePass.claimStep(0)).to.be.revertedWith('BattlePass: caller already claimed this step');
+      await expect(battlePass.claimStep(owner.address, 0)).to.be.revertedWith('BattlePass: caller already claimed this step');
     });
     it('Should claim all the items in the step', async function () {
       const { battlePass, erc1155, erc20, erc1155ItemType, erc20ItemType, otherAccounts } = await loadFixture(
@@ -310,7 +310,7 @@ describe('BattlePass', function () {
       await battlePass.activateStep(0);
 
       await battlePass.grantPoints('50', otherAccounts[0].address);
-      await expect(battlePass.connect(otherAccounts[0]).claimStep(0))
+      await expect(battlePass.connect(otherAccounts[0]).claimStep(otherAccounts[0].address, 0))
         .to.emit(battlePass, 'ClaimStep')
         .withArgs('0', otherAccounts[0].address);
 
@@ -337,7 +337,7 @@ describe('BattlePass', function () {
       await battlePass.activateStep(0);
 
       await battlePass.grantPoints('50', otherAccounts[0].address);
-      await expect(battlePass.connect(otherAccounts[0]).claimStep(0)).to.be.revertedWith(
+      await expect(battlePass.connect(otherAccounts[0]).claimStep(otherAccounts[0].address, 0)).to.be.revertedWith(
         'BattlePass: this step require a premium access'
       );
 
@@ -358,7 +358,7 @@ describe('BattlePass', function () {
 
       await battlePass.grantPremium(otherAccounts[0].address);
       await battlePass.grantPoints('50', otherAccounts[0].address);
-      await expect(battlePass.connect(otherAccounts[0]).claimStep(0))
+      await expect(battlePass.connect(otherAccounts[0]).claimStep(otherAccounts[0].address, 0))
         .to.emit(battlePass, 'ClaimStep')
         .withArgs('0', otherAccounts[0].address);
 

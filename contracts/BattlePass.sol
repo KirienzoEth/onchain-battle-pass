@@ -141,27 +141,27 @@ contract BattlePass is PremiumAccessManager, ERC1155Holder {
     emit ActivateStep(_stepIndex);
   }
 
-  function claimStep(uint256 _stepIndex) public {
+  function claimStep(address _address, uint256 _stepIndex) public {
     Step memory _step = getStep(_stepIndex);
     require(_step.isClaimable, "BattlePass: step is not claimable");
-    require(!didAddressClaimStep[_msgSender()][_stepIndex], "BattlePass: caller already claimed this step");
-    require(balanceOf[_msgSender()] >= _step.pointsRequired, "BattlePass: caller does not have enough points");
+    require(!didAddressClaimStep[_address][_stepIndex], "BattlePass: caller already claimed this step");
+    require(balanceOf[_address] >= _step.pointsRequired, "BattlePass: caller does not have enough points");
 
     if (_step.isPremiumRequired) {
-      require(hasPremium[_msgSender()], "BattlePass: this step require a premium access");
+      require(hasPremium[_address], "BattlePass: this step require a premium access");
     }
 
-    didAddressClaimStep[_msgSender()][_stepIndex] = true;
+    didAddressClaimStep[_address][_stepIndex] = true;
 
-    for (uint _i = 0; _i < _step.itemsAmount; _i++) {
+    for (uint _i = 0; _i < _step.itemsAmount; ++_i) {
       Item memory _item = _itemsOfStep[_stepIndex][_i];
       if (_item.itemType == ItemType.ERC20) {
-        IERC20(_item.contractAddress).transfer(_msgSender(), _item.amount);
+        IERC20(_item.contractAddress).transfer(_address, _item.amount);
       } else {
-        IERC1155(_item.contractAddress).safeTransferFrom(address(this), _msgSender(), _item.tokenId, _item.amount, "");
+        IERC1155(_item.contractAddress).safeTransferFrom(address(this), _address, _item.tokenId, _item.amount, "");
       }
     }
 
-    emit ClaimStep(_stepIndex, _msgSender());
+    emit ClaimStep(_stepIndex, _address);
   }
 }
