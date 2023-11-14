@@ -233,7 +233,7 @@ describe('BattlePass', function () {
       await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 0, 5);
       await battlePass.enableStep(0);
 
-      await expect(battlePass.enableStep(0)).to.be.revertedWith('BattlePass: step was already enabled');
+      await expect(battlePass.enableStep(0)).to.be.revertedWith('BattlePass: step is already enabled');
     });
     it('Should activate the step if the caller has all of the assets', async function () {
       const { battlePass, erc1155, erc20, erc1155ItemType, erc20ItemType } = await loadFixture(deployFixture);
@@ -285,6 +285,20 @@ describe('BattlePass', function () {
 
       await expect(battlePass.claimStep(owner.address, 0)).to.be.revertedWith(
         'BattlePass: caller does not have enough points',
+      );
+    });
+    it('Should fail if the step has reached its maximum amount of claims', async function () {
+      const { battlePass, owner, erc1155ItemType, erc1155, otherAccounts } = await loadFixture(deployFixture);
+
+      await battlePass.createStep('50', '1', false);
+      await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, 0, 5);
+      await battlePass.enableStep(0);
+      await battlePass.grantPoints('50', owner.address);
+      await battlePass.grantPoints('50', otherAccounts[0].address);
+
+      await battlePass.claimStep(owner.address, 0);
+      await expect(battlePass.claimStep(otherAccounts[0].address, 0)).to.be.revertedWith(
+        'BattlePass: no items remaining',
       );
     });
     it('Should fail if the caller already claimed', async function () {
@@ -378,6 +392,30 @@ describe('BattlePass', function () {
 
       const ercBalance = await erc20.balanceOf(otherAccounts[0].address);
       expect(ercBalance).to.equal(ethers.utils.parseEther('1'));
+    });
+  });
+
+  describe('getStepRemainingClaims', function () {
+    it('Should fail if the step does not exist', async function () {
+      const { battlePass } = await loadFixture(deployFixture);
+
+      await expect(battlePass.getStepRemainingClaims(0)).to.be.revertedWith('BattlePass: step does not exist');
+    });
+    it('Should return the amount of claims left for a step', async function () {
+      const { battlePass, owner, erc1155, erc1155ItemType } = await loadFixture(deployFixture);
+
+      const claimsAmount = 50;
+      const pointsRequired = 100;
+      await battlePass.createStep(pointsRequired, claimsAmount, false);
+      await battlePass.addItemToStep(0, erc1155ItemType, erc1155.address, '1', '5');
+      await battlePass.enableStep(0);
+
+      expect(await battlePass.getStepRemainingClaims(0)).to.equal(claimsAmount);
+
+      await battlePass.grantPoints(pointsRequired, owner.address);
+      await battlePass.claimStep(owner.address, 0);
+
+      expect(await battlePass.getStepRemainingClaims(0)).to.equal(claimsAmount - 1);
     });
   });
 });

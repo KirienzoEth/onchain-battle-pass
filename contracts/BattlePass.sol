@@ -98,7 +98,8 @@ contract BattlePass is PremiumAccessManager, ERC1155Holder {
     emit CreateStep(stepsAmount++, _pointsRequired, _claimsAmount, _isPremiumRequired);
   }
 
-  /// @notice Add an item to the step stored at the provided index
+  /// @notice Add an item to the step stored at the provided index.
+  /// @dev `_itemAmount` is the amount of item an address can claim after reaching the points threshold.
   /// @param _stepIndex Index of the step to add the item to
   /// @param _type type of the item to add
   /// @param _itemContractAddress contract address of the item to add
@@ -138,7 +139,7 @@ contract BattlePass is PremiumAccessManager, ERC1155Holder {
   /// @param _stepIndex The index of the step to enable
   function enableStep(uint256 _stepIndex) public onlyOwner {
     Step memory _step = getStep(_stepIndex);
-    require(!_step.isClaimable, "BattlePass: step was already enabled");
+    require(!_step.isClaimable, "BattlePass: step is already enabled");
 
     for (uint _i = 0; _i < _step.itemsAmount; _i++) {
       Item memory _item = _itemsOfStep[_stepIndex][_i];
@@ -160,6 +161,20 @@ contract BattlePass is PremiumAccessManager, ERC1155Holder {
     emit EnableStep(_stepIndex);
   }
 
+  /// @notice Get how many times the step can be claimed before running out of prizes
+  /// @param _stepIndex Index of the step to check
+  function getStepRemainingClaims(uint256 _stepIndex) public view returns (uint256 _timesClaimed) {
+    Item memory _item = getItemOfStep(_stepIndex, 0);
+
+    if (_item.itemType == ItemType.ERC20) {
+      _timesClaimed = IERC20(_item.contractAddress).balanceOf(address(this)) / _item.amount;
+    } else {
+      _timesClaimed = IERC1155(_item.contractAddress).balanceOf(address(this), _item.tokenId) / _item.amount;
+    }
+
+    return _timesClaimed;
+  }
+
   /// @notice Claim the rewards for step `_stepIndex` if `_address` has enough points
   /// @param _address Address of the user to send the prizes to
   /// @param _stepIndex Index of the step to claim
@@ -168,6 +183,7 @@ contract BattlePass is PremiumAccessManager, ERC1155Holder {
     require(_step.isClaimable, "BattlePass: step is not claimable");
     require(!didAddressClaimStep[_address][_stepIndex], "BattlePass: caller already claimed this step");
     require(balanceOf[_address] >= _step.pointsRequired, "BattlePass: caller does not have enough points");
+    require(getStepRemainingClaims(_stepIndex) > 0, "BattlePass: no items remaining");
 
     if (_step.isPremiumRequired) {
       require(hasPremium[_address], "BattlePass: this step require a premium access");
